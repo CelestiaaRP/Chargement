@@ -6,7 +6,7 @@
     <title>Chargement - CelestiaRP</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        /* --- CSS STYLE RÉTRO --- */
+        /* --- CSS GLOBAL --- */
         :root {
             --blue-gmod: #00aaff;
             --bg-dark: #0a0a10;
@@ -25,7 +25,7 @@
             user-select: none;
         }
 
-        /* --- Effets CRT / Scanlines --- */
+        /* --- Effet Écran Cathodique (CRT) - LEGER --- */
         .crt-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -39,15 +39,16 @@
                 transparent 4px
             );
             animation: flicker 0.15s infinite;
-            opacity: 0.5;
+            opacity: 0.3; /* Un peu plus discret */
         }
 
         @keyframes flicker {
-            0% { opacity: 0.5; }
-            50% { opacity: 0.45; }
-            100% { opacity: 0.5; }
+            0% { opacity: 0.3; }
+            50% { opacity: 0.25; }
+            100% { opacity: 0.3; }
         }
 
+        /* --- Mise en page --- */
         .container {
             position: relative;
             display: flex;
@@ -59,7 +60,6 @@
             z-index: 1;
         }
 
-        /* --- Zone Centrale --- */
         .center-stage {
             position: relative;
             width: 400px;
@@ -70,14 +70,15 @@
             margin-bottom: 50px;
         }
 
+        /* --- Animations --- */
         .gear-spin {
             position: absolute;
             width: 200px;
-            height: 200px;
+            height: 200px; 
             background-size: contain;
             opacity: 0.3;
             animation: rotate 10s linear infinite;
-            mix-blend-mode: screen; 
+            mix-blend-mode: screen; /* Rend le noir transparent */
         }
 
         .g-logo-center {
@@ -93,20 +94,18 @@
             width: 64px; 
             height: auto;
             opacity: 0.7;
-            mix-blend-mode: screen;
+            mix-blend-mode: screen; /* Rend le fond noir transparent */
             filter: drop-shadow(0 0 5px var(--blue-gmod));
             animation: float 4s ease-in-out infinite;
         }
         
         .item-1 { top: 0; left: 20%; animation-delay: 0s; }
         .item-2 { top: 10%; right: 20%; animation-delay: 1s; }
-        .item-3 { bottom: 20%; left: 30%; animation-delay: 2s; }
 
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
 
-
-        /* --- Zone de Texte et Barre --- */
+        /* --- Textes et Barre --- */
         .text-area {
             width: 80%;
             max-width: 900px;
@@ -118,6 +117,7 @@
             margin-bottom: 15px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            line-height: 1.5;
         }
 
         .blue-highlight { color: var(--blue-gmod); }
@@ -134,13 +134,14 @@
 
         .pixel-progress-bar {
             height: 100%;
-            width: 0%;
+            width: 0%; /* Commence à 0 */
             background-image: url('https://placehold.co/32x32/00aaff/ffffff?text=G'); 
             background-repeat: repeat-x;
             background-size: contain;
-            transition: width 0.1s steps(5);
+            transition: width 0.2s linear; /* Transition fluide */
         }
 
+        /* Décoration 'g' sur les cotés */
         .pixel-progress-container::before, .pixel-progress-container::after {
             content: 'g';
             position: absolute;
@@ -153,7 +154,6 @@
         }
         .pixel-progress-container::before { left: -40px; }
         .pixel-progress-container::after { right: -40px; }
-
 
         .status-text {
             font-size: 0.8rem;
@@ -170,28 +170,10 @@
             text-align: center;
             color: var(--blue-gmod);
         }
-
-        /* Effet glitch */
-        .glitch-edge {
-            position: fixed;
-            top: 10%; left: -20px;
-            width: 50px; height: 5px;
-            background: magenta;
-            box-shadow: 0 20px 0 cyan;
-            animation: glitch-anim 2s infinite linear alternate-reverse;
-        }
-        @keyframes glitch-anim {
-            0% { left: -20px; opacity: 0; }
-            10% { left: 0px; opacity: 1; }
-            11% { left: -20px; opacity: 0; }
-            100% { left: -20px; opacity: 0; }
-        }
     </style>
 </head>
 <body>
     <div class="crt-overlay"></div>
-    <div class="glitch-edge"></div>
-
     <div class="container">
         <div class="center-stage">
             <div class="gear-spin"></div>
@@ -208,90 +190,89 @@
                 <div class="pixel-progress-bar" id="progress"></div>
             </div>
 
-            <div class="status-text" id="status">En attente du serveur...</div>
+            <div class="status-text" id="status">Initialisation...</div>
         </div>
         
         <h3 class="welcome-text">BIENVENUE SUR CelestiaRP !</h3>
     </div>
 
     <script>
-        // Variables pour suivre la progression réelle
-        let totalFiles = 0;
-        let downloadedFiles = 0;
-        let neededFiles = 0;
+        // Variables globales
+        var totalFiles = 0;
+        var downloadedFiles = 0;
+        
+        // Éléments du DOM
+        var progressBar = document.getElementById('progress');
+        var statusText = document.getElementById('status');
+        var serverNameEl = document.getElementById('server-name');
 
-        const progressBar = document.getElementById('progress');
-        const statusText = document.getElementById('status');
-        const serverNameEl = document.getElementById('server-name');
-
-        /* 1. Cette fonction est appelée par GMod au tout début 
-           Elle donne le nom du serveur, la map, etc.
-        */
+        // 1. Réception du nom du serveur
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
-            // GMod envoie parfois le nom un peu tard, on force la mise à jour
             if (servername) {
                 serverNameEl.innerText = servername;
             }
         }
 
-        /* 2. Cette fonction est appelée par GMod pour dire combien de fichiers il y a au total.
-           C'est CRUCIAL pour que la barre soit juste.
-        */
+        // 2. Définition du nombre TOTAL de fichiers à télécharger (Synchro réelle)
         function SetFilesTotal(total) {
             totalFiles = total;
+            downloadedFiles = 0; // On reset le compteur pour être propre
         }
 
-        /*
-           3. GMod peut aussi dire combien de fichiers sont "nécessaires".
-           On l'utilise pour réinitialiser le compteur si besoin.
-        */
+        // 3. Appelé aussi par GMod quand le nombre de fichiers change
         function SetFilesNeeded(needed) {
-            neededFiles = needed;
+            // Parfois utile pour recalibrer, mais SetFilesTotal est le maitre
+            if (totalFiles === 0) totalFiles = needed; 
         }
 
-        /* 4. Cette fonction est appelée chaque fois qu'un fichier est téléchargé.
-           C'est ici qu'on fait avancer la barre.
-        */
+        // 4. Appelé à chaque fichier téléchargé (C'est ici que la barre avance)
         function DownloadingFile(fileName) {
             downloadedFiles++;
             
-            // Calcul du pourcentage réel
-            let percentage = 0;
+            // Calcul précis du pourcentage
+            var percentage = 0;
             if (totalFiles > 0) {
                 percentage = (downloadedFiles / totalFiles) * 100;
             }
 
-            // On coupe le nom du fichier s'il est trop long
-            let shortName = fileName;
+            // Mise à jour de la barre
+            progressBar.style.width = percentage + "%";
+
+            // Mise à jour du texte (Nom du fichier raccourci)
+            var shortName = fileName;
             if (fileName.length > 50) {
                 shortName = "..." + fileName.substring(fileName.length - 50);
             }
-            
             statusText.innerText = "TÉLÉCHARGEMENT : " + shortName;
-            progressBar.style.width = percentage + "%";
         }
 
-        /* 5. Cette fonction met à jour le texte de statut (ex: "Sending Client Info...")
-        */
+        // 5. Gestion des statuts (Textes informatifs)
         function SetStatus(status) {
-            // Si GMod dit "Sending client info", c'est que c'est fini !
-            if (status.includes("Sending client info") || status.includes("Envoi des infos client")) {
-                statusText.innerText = "ENVOI DES INFOS CLIENT... (C'est presque fini !)";
+            var statusStr = String(status);
+
+            // Cas spécial : Fin du chargement
+            if (statusStr.indexOf("Sending client info") !== -1 || statusStr.indexOf("infos client") !== -1) {
+                statusText.innerText = "ENVOI DES INFOS CLIENT... (TERMINÉ !)";
                 progressBar.style.width = "100%";
-            } else if (status.includes("Getting Addon Info")) {
-                statusText.innerText = "RÉCUPÉRATION DES ADDONS...";
-            } else {
-                statusText.innerText = status.toUpperCase();
+            } 
+            // Cas spécial : Workshop (GMod n'envoie pas de chiffres ici, juste du texte)
+            else if (statusStr.indexOf("Workshop") !== -1) {
+                statusText.innerText = "TÉLÉCHARGEMENT ADDONS STEAM (WORKSHOP)...";
+                // On laisse la barre là où elle est ou à 0, car on ne connait pas le %
+            } 
+            // Cas normal
+            else {
+                statusText.innerText = statusStr.toUpperCase();
             }
         }
 
-        // On attache ces fonctions à la fenêtre "window" pour être sûr que GMod les trouve
+        // --- EXPOSITION DES FONCTIONS ---
+        // Indispensable pour que GMod communique avec la page
         window.GameDetails = GameDetails;
         window.SetFilesTotal = SetFilesTotal;
         window.SetFilesNeeded = SetFilesNeeded;
         window.DownloadingFile = DownloadingFile;
         window.SetStatus = SetStatus;
-
     </script>
 </body>
 </html>
