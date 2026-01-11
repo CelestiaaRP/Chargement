@@ -3,165 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CelestiaRP - Chargement</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>Chargement - CelestiaRP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* --- 1. LE STYLE RÉTRO (VISUEL) --- */
+
+        :root {
+            --blue-gmod: #00aaff;
+            --bg-dark: #0a0a10;
         }
 
-        body {
+        body, html {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
-            background-attachment: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            font-family: 'Press Start 2P', cursive;
             color: white;
-            font-family: 'Roboto', sans-serif;
-            height: 100vh;
+            image-rendering: pixelated;
+            user-select: none;
+        }
+
+        /* Effet CRT */
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.2) 0px,
+                rgba(0, 0, 0, 0.2) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            opacity: 0.3;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.25; }
+            100% { opacity: 0.3; }
+        }
+
+        /* Structure */
+        .container {
+            position: relative;
             display: flex;
             flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            height: 90%;
+            padding-bottom: 50px;
+            z-index: 1;
+        }
+
+        .center-stage {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .background-anim {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(50, 100, 200, 0.03) 10px,
-                rgba(50, 100, 200, 0.03) 20px
-            );
-            animation: slide 20s linear infinite;
-        }
-
-        @keyframes slide {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(20px); }
-        }
-
-        .content {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            width: 100%;
-            max-width: 800px;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 4em;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            font-weight: 900;
-            text-shadow: 0 0 30px rgba(50, 100, 200, 0.6), 0 0 60px rgba(50, 100, 200, 0.3);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.9; transform: scale(1.02); }
-        }
-
-        h1 span {
-            color: #3264c8;
-            text-shadow: 0 0 20px rgba(50, 100, 200, 0.8);
-        }
-
-        #status {
-            font-size: 1.3em;
-            color: #aaaaaa;
             margin-bottom: 50px;
-            min-height: 30px;
-            font-weight: 300;
-            animation: fadeInOut 3s ease-in-out infinite;
         }
 
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
-
-        .progress-container {
-            width: 70%;
-            max-width: 600px;
-            height: 8px;
-            background-color: rgba(30, 30, 35, 0.8);
-            border-radius: 10px;
-            overflow: hidden;
+        /* Le logo 'g' au centre */
+        .g-logo-center {
             position: relative;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
-            margin: 0 auto 30px;
+            font-size: 12rem;
+            color: white;
+            text-shadow: 4px 4px 0px var(--blue-gmod), -4px -4px 0px var(--blue-gmod);
+            z-index: 2;
         }
 
-        .progress-bar {
+        .floating-item {
+            position: absolute;
+            width: 64px; 
+            height: auto;
+            opacity: 0.7;
+            mix-blend-mode: screen; /* Rend le fond noir transparent */
+            filter: drop-shadow(0 0 5px var(--blue-gmod));
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .item-1 { top: 0; left: 20%; animation-delay: 0s; }
+        .item-2 { top: 10%; right: 20%; animation-delay: 1s; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+
+        /* Textes */
+        .text-area {
+            width: 80%;
+            max-width: 900px;
+            text-align: left;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1.5;
+        }
+
+        .blue-highlight { color: var(--blue-gmod); }
+
+        /* Barre de progression RETRO */
+        .pixel-progress-container {
+            width: 100%;
+            height: 50px;
+            border: 4px solid white;
+            background: #000;
+            padding: 4px;
+            box-shadow: 0 0 15px var(--blue-gmod);
+            position: relative;
+        }
+
+        .pixel-progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, #3264c8, #4a7de8, #3264c8);
-            background-size: 200% 100%;
-            border-radius: 10px;
-            transition: width 0.3s ease-out;
-            box-shadow: 0 0 20px rgba(50, 100, 200, 0.6), 0 0 40px rgba(50, 100, 200, 0.3);
-            animation: shimmer 2s linear infinite;
+            background-image: url('https://placehold.co/32x32/00aaff/ffffff?text=G'); 
+            background-repeat: repeat-x;
+            background-size: contain;
+            transition: width 0.2s linear; 
         }
 
-        @keyframes shimmer {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 200% 0%; }
+        /* Décoration 'g' sur les cotés */
+        .pixel-progress-container::before, .pixel-progress-container::after {
+            content: 'g';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--blue-gmod);
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
         }
+        .pixel-progress-container::before { left: -40px; }
+        .pixel-progress-container::after { right: -40px; }
 
-        .progress-text {
-            font-size: 1.1em;
-            color: #ffffff;
+        .status-text {
+            font-size: 0.8rem;
             margin-top: 15px;
-            font-weight: 400;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            color: #ccc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            justify-content: space-between; /* Pour séparer texte et pourcentage */
         }
 
-        .credits {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+        .welcome-text {
+            margin-top: 20px;
+            font-size: 1.5rem;
             text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            font-weight: 300;
+            color: var(--blue-gmod);
         }
 
-        .credits div {
-            margin: 5px 0;
-        }
-
-        .version {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            color: #555;
-            font-size: 0.8em;
-            font-weight: 300;
-        }
-
-        .loading-dots {
-            display: inline-block;
-        }
-
+        /* Animation des 3 points (...) */
         .loading-dots::after {
             content: '...';
             animation: dots 1.5s steps(4, end) infinite;
         }
-
         @keyframes dots {
             0%, 20% { content: '.'; }
             40% { content: '..'; }
@@ -170,75 +177,110 @@
     </style>
 </head>
 <body>
-    <div class="background-anim"></div>
-    
-    <div class="version">v1.0.0</div>
+    <div class="crt-overlay"></div>
 
-    <div class="content">
-        <h1>Celestia<span>RP</span></h1>
-        <div id="status">Connexion au serveur<span class="loading-dots"></span></div>
+    <div class="container">
+        <div class="center-stage">
+            <div class="g-logo-center">g</div>
 
-        <div class="progress-container">
-            <div class="progress-bar" id="loadbar"></div>
+            <img src="https://placehold.co/128x128/000000/ffffff?text=Gmod" class="floating-item item-1">
+            <img src="https://placehold.co/128x128/000000/ffffff?text=RP" class="floating-item item-2">
         </div>
 
-        <div class="progress-text" id="progressText">0%</div>
-    </div>
+        <div class="text-area">
+            <h2>CONNEXION À : <span class="blue-highlight" id="server-name">CelestiaRP...</span></h2>
+            
+            <div class="pixel-progress-container">
+                <div class="pixel-progress-bar" id="loadbar"></div>
+            </div>
 
-    <div class="credits">
+            <div class="status-text">
+                <span id="status">Initialisation<span class="loading-dots"></span></span>
+                <span id="progressText" style="color: var(--blue-gmod);">0%</span>
+            </div>
+        </div>
         
+        <h3 class="welcome-text">BIENVENUE SUR CelestiaRP !</h3>
     </div>
 
     <script>
+        // Variables
         let filesTotal = 0;
         let filesNeeded = 0;
+        
+        // Sélection des éléments HTML RÉTRO
         const statusText = document.getElementById('status');
         const loadBar = document.getElementById('loadbar');
         const progressText = document.getElementById('progressText');
+        const serverNameEl = document.getElementById('server-name');
 
+        // Fonction pour récupérer le nom du serveur
+        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            if (servername) {
+                serverNameEl.innerText = servername;
+            }
+        }
+
+        // Fonction appelée quand un fichier se télécharge
         function DownloadingFile(fileName) {
+            // On prend juste le nom du fichier (pas tout le chemin dossier/dossier/...)
             const shortName = fileName.split('/').pop();
-            statusText.innerHTML = "Téléchargement : <span style='color: #3264c8;'>" + shortName + "</span><span class='loading-dots'></span>";
+            statusText.innerHTML = "Téléchargement : <span style='color: #00aaff;'>" + shortName + "</span>";
         }
 
+        // Fonction appelée quand le statut change (Workshop, Connexion...)
         function SetStatusChanged(status) {
-            statusText.innerHTML = status + "<span class='loading-dots'></span>";
+            // On remplace les termes anglais par du français si nécessaire
+            let finalStatus = status;
+            if (status.includes("Sending client info")) finalStatus = "Envoi des infos client";
+            if (status.includes("Client info sent")) finalStatus = "Infos client envoyées !";
+            
+            statusText.innerHTML = finalStatus + "<span class='loading-dots'></span>";
         }
 
+        // GMod nous dit combien il reste de fichiers
         function SetFilesNeeded(needed) {
             filesNeeded = needed;
             updateProgress();
         }
 
+        // GMod nous dit le total (au début)
         function SetFilesTotal(total) {
             filesTotal = total;
             updateProgress();
         }
 
+        // Calcul savant du pourcentage (C'est ça qui marche bien !)
         function updateProgress() {
             if (filesTotal > 0) {
                 let progress = Math.max(0, Math.min(100, ((filesTotal - filesNeeded) / filesTotal) * 100));
+                
+                // Mise à jour de la barre et du texte
                 loadBar.style.width = progress + "%";
                 progressText.textContent = Math.round(progress) + "%";
             } else {
-                loadBar.style.width = "0%";
-                progressText.textContent = "0%";
+                loadBar.style.width = "100%"; // Si pas de fichier, on met 100% par sécurité
+                progressText.textContent = "100%";
             }
         }
 
+        // --- SIMULATION INTELLIGENTE ---
+        // Ce bout de code vérifie si tu es dans GMod ou sur Chrome/Firefox
         if (!window.navigator.userAgent.includes("Valve Source Client")) {
+            // ON EST SUR LE WEB (SIMULATION)
             let p = 0;
             const messages = [
                 "Connexion au serveur",
                 "Chargement des ressources",
-                "Téléchargement des fichiers",
+                "Téléchargement du Workshop",
                 "Initialisation du client",
-                "Presque prêt"
+                "Presque prêt..."
             ];
             let messageIndex = 0;
             
+            // Fausse progression pour tester le visuel
             setInterval(() => {
-                p += Math.random() * 2;
+                p += Math.random() * 2; // Avance un peu au hasard
                 if (p > 100) {
                     p = 0;
                     messageIndex = (messageIndex + 1) % messages.length;
@@ -247,7 +289,17 @@
                 progressText.textContent = Math.round(Math.min(p, 100)) + "%";
                 statusText.innerHTML = messages[messageIndex] + "<span class='loading-dots'></span>";
             }, 100);
+        } else {
+            // ON EST DANS GMOD (VRAI MODE)
+            // On ne fait rien, on attend que le jeu appelle les fonctions ci-dessus
         }
+
+        // EXPOSITION DES FONCTIONS (Vital pour GMod)
+        window.GameDetails = GameDetails;
+        window.DownloadingFile = DownloadingFile;
+        window.SetStatusChanged = SetStatusChanged;
+        window.SetFilesNeeded = SetFilesNeeded;
+        window.SetFilesTotal = SetFilesTotal;
     </script>
 </body>
 </html>
