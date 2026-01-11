@@ -25,7 +25,7 @@
             user-select: none;
         }
 
-        /* --- Effet Écran Cathodique (CRT) - LEGER --- */
+        /* --- Effet Écran Cathodique (CRT) --- */
         .crt-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -39,7 +39,7 @@
                 transparent 4px
             );
             animation: flicker 0.15s infinite;
-            opacity: 0.3; /* Un peu plus discret */
+            opacity: 0.3;
         }
 
         @keyframes flicker {
@@ -74,11 +74,12 @@
         .gear-spin {
             position: absolute;
             width: 200px;
-            height: 200px; 
+            height: 200px;
+            background-image: url('https://placehold.co/200x200/000000/00aaff?text=GEAR+ICON'); 
             background-size: contain;
             opacity: 0.3;
             animation: rotate 10s linear infinite;
-            mix-blend-mode: screen; /* Rend le noir transparent */
+            mix-blend-mode: screen;
         }
 
         .g-logo-center {
@@ -94,7 +95,7 @@
             width: 64px; 
             height: auto;
             opacity: 0.7;
-            mix-blend-mode: screen; /* Rend le fond noir transparent */
+            mix-blend-mode: screen;
             filter: drop-shadow(0 0 5px var(--blue-gmod));
             animation: float 4s ease-in-out infinite;
         }
@@ -134,14 +135,13 @@
 
         .pixel-progress-bar {
             height: 100%;
-            width: 0%; /* Commence à 0 */
+            width: 0%;
             background-image: url('https://placehold.co/32x32/00aaff/ffffff?text=G'); 
             background-repeat: repeat-x;
             background-size: contain;
-            transition: width 0.2s linear; /* Transition fluide */
+            transition: width 0.3s ease-out; /* Transition un peu plus visible */
         }
 
-        /* Décoration 'g' sur les cotés */
         .pixel-progress-container::before, .pixel-progress-container::after {
             content: 'g';
             position: absolute;
@@ -174,6 +174,7 @@
 </head>
 <body>
     <div class="crt-overlay"></div>
+
     <div class="container">
         <div class="center-stage">
             <div class="gear-spin"></div>
@@ -190,7 +191,7 @@
                 <div class="pixel-progress-bar" id="progress"></div>
             </div>
 
-            <div class="status-text" id="status">Initialisation...</div>
+            <div class="status-text" id="status">Chargement du script...</div>
         </div>
         
         <h3 class="welcome-text">BIENVENUE SUR CelestiaRP !</h3>
@@ -206,6 +207,9 @@
         var statusText = document.getElementById('status');
         var serverNameEl = document.getElementById('server-name');
 
+        // PREUVE DE VIE : On change le texte tout de suite pour montrer que le script marche
+        statusText.innerText = "CONNEXION AU SERVEUR...";
+
         // 1. Réception du nom du serveur
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
             if (servername) {
@@ -213,32 +217,33 @@
             }
         }
 
-        // 2. Définition du nombre TOTAL de fichiers à télécharger (Synchro réelle)
+        // 2. Nombre TOTAL de fichiers
         function SetFilesTotal(total) {
             totalFiles = total;
-            downloadedFiles = 0; // On reset le compteur pour être propre
+            downloadedFiles = 0;
         }
 
-        // 3. Appelé aussi par GMod quand le nombre de fichiers change
+        // 3. Changement du nombre de fichiers nécessaires
         function SetFilesNeeded(needed) {
-            // Parfois utile pour recalibrer, mais SetFilesTotal est le maitre
             if (totalFiles === 0) totalFiles = needed; 
         }
 
-        // 4. Appelé à chaque fichier téléchargé (C'est ici que la barre avance)
+        // 4. Téléchargement d'un fichier (Fait avancer la barre)
         function DownloadingFile(fileName) {
             downloadedFiles++;
             
-            // Calcul précis du pourcentage
             var percentage = 0;
+            // Sécurité : On évite la division par zéro
             if (totalFiles > 0) {
                 percentage = (downloadedFiles / totalFiles) * 100;
+            } else {
+                // Si on télécharge mais que le total est inconnu, on met 50% par défaut
+                percentage = 50; 
             }
 
-            // Mise à jour de la barre
             progressBar.style.width = percentage + "%";
 
-            // Mise à jour du texte (Nom du fichier raccourci)
+            // Nom du fichier raccourci
             var shortName = fileName;
             if (fileName.length > 50) {
                 shortName = "..." + fileName.substring(fileName.length - 50);
@@ -246,28 +251,32 @@
             statusText.innerText = "TÉLÉCHARGEMENT : " + shortName;
         }
 
-        // 5. Gestion des statuts (Textes informatifs)
+        // 5. Gestion des statuts (CORRECTION MAJEURE ICI)
         function SetStatus(status) {
+            // On force le statut en chaîne de texte pour éviter les bugs
             var statusStr = String(status);
+            
+            // On met tout en minuscule pour faciliter la détection
+            var lowerStatus = statusStr.toLowerCase();
 
-            // Cas spécial : Fin du chargement
-            if (statusStr.indexOf("Sending client info") !== -1 || statusStr.indexOf("infos client") !== -1) {
-                statusText.innerText = "ENVOI DES INFOS CLIENT... (TERMINÉ !)";
+            // DÉTECTION DE LA FIN DU CHARGEMENT
+            // On cherche "client info", "sent", "sending", etc.
+            if (lowerStatus.indexOf("client info") !== -1 || lowerStatus.indexOf("infos client") !== -1) {
+                statusText.innerText = "LANCEMENT DU JEU... (TERMINÉ !)";
+                // FORCE LA BARRE À 100% MÊME S'IL N'Y AVAIT PAS DE FICHIERS
                 progressBar.style.width = "100%";
             } 
-            // Cas spécial : Workshop (GMod n'envoie pas de chiffres ici, juste du texte)
-            else if (statusStr.indexOf("Workshop") !== -1) {
+            // DÉTECTION DU WORKSHOP
+            else if (lowerStatus.indexOf("workshop") !== -1) {
                 statusText.innerText = "TÉLÉCHARGEMENT ADDONS STEAM (WORKSHOP)...";
-                // On laisse la barre là où elle est ou à 0, car on ne connait pas le %
             } 
-            // Cas normal
+            // AUTRES CAS
             else {
                 statusText.innerText = statusStr.toUpperCase();
             }
         }
 
         // --- EXPOSITION DES FONCTIONS ---
-        // Indispensable pour que GMod communique avec la page
         window.GameDetails = GameDetails;
         window.SetFilesTotal = SetFilesTotal;
         window.SetFilesNeeded = SetFilesNeeded;
