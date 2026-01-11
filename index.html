@@ -3,285 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chargement - CelestiaRP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>CelestiaRP - Chargement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- CSS GLOBAL --- */
-        :root {
-            --blue-gmod: #00aaff;
-            --bg-dark: #0a0a10;
-        }
-
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--bg-dark);
-            font-family: 'Press Start 2P', cursive;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            background-attachment: fixed;
             color: white;
-            image-rendering: pixelated;
-            user-select: none;
-        }
-
-        /* --- Effet Écran Cathodique (CRT) --- */
-        .crt-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 100;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.2) 0px,
-                rgba(0, 0, 0, 0.2) 2px,
-                transparent 2px,
-                transparent 4px
-            );
-            animation: flicker 0.15s infinite;
-            opacity: 0.3;
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.25; }
-            100% { opacity: 0.3; }
-        }
-
-        /* --- Mise en page --- */
-        .container {
-            position: relative;
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            height: 90%;
-            padding-bottom: 50px;
-            z-index: 1;
-        }
-
-        .center-stage {
-            position: relative;
-            width: 400px;
-            height: 300px;
-            display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 50px;
-        }
-
-        /* --- Animations --- */
-        .gear-spin {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background-image: url('https://placehold.co/200x200/000000/00aaff?text=GEAR+ICON'); 
-            background-size: contain;
-            opacity: 0.3;
-            animation: rotate 10s linear infinite;
-            mix-blend-mode: screen;
-        }
-
-        .g-logo-center {
+            overflow: hidden;
             position: relative;
-            font-size: 12rem;
-            color: white;
-            text-shadow: 4px 4px 0px var(--blue-gmod), -4px -4px 0px var(--blue-gmod);
-            z-index: 2;
         }
 
-        .floating-item {
+        .background-anim {
             position: absolute;
-            width: 64px; 
-            height: auto;
-            opacity: 0.7;
-            mix-blend-mode: screen;
-            filter: drop-shadow(0 0 5px var(--blue-gmod));
-            animation: float 4s ease-in-out infinite;
-        }
-        
-        .item-1 { top: 0; left: 20%; animation-delay: 0s; }
-        .item-2 { top: 10%; right: 20%; animation-delay: 1s; }
-
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-
-        /* --- Textes et Barre --- */
-        .text-area {
-            width: 80%;
-            max-width: 900px;
-            text-align: left;
-        }
-
-        h2 {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            line-height: 1.5;
-        }
-
-        .blue-highlight { color: var(--blue-gmod); }
-
-        .pixel-progress-container {
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 50px;
-            border: 4px solid white;
-            background: #000;
-            padding: 4px;
-            box-shadow: 0 0 15px var(--blue-gmod);
-            position: relative;
+            height: 100%;
+            z-index: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(50, 100, 200, 0.03) 10px,
+                rgba(50, 100, 200, 0.03) 20px
+            );
+            animation: slide 20s linear infinite;
         }
 
-        .pixel-progress-bar {
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(20px); }
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 4em;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(50, 100, 200, 0.6), 0 0 60px rgba(50, 100, 200, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.02); }
+        }
+
+        h1 span {
+            color: #3264c8;
+            text-shadow: 0 0 20px rgba(50, 100, 200, 0.8);
+        }
+
+        #status {
+            font-size: 1.3em;
+            color: #aaaaaa;
+            margin-bottom: 50px;
+            min-height: 30px;
+            font-weight: 300;
+            animation: fadeInOut 3s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .progress-container {
+            width: 70%;
+            max-width: 600px;
+            height: 8px;
+            background-color: rgba(30, 30, 35, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
+            margin: 0 auto 30px;
+        }
+
+        .progress-bar {
             height: 100%;
             width: 0%;
-            background-image: url('https://placehold.co/32x32/00aaff/ffffff?text=G'); 
-            background-repeat: repeat-x;
-            background-size: contain;
-            transition: width 0.3s ease-out; /* Transition un peu plus visible */
+            background: linear-gradient(90deg, #3264c8, #4a7de8, #3264c8);
+            background-size: 200% 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease-out;
+            box-shadow: 0 0 20px rgba(50, 100, 200, 0.6), 0 0 40px rgba(50, 100, 200, 0.3);
+            animation: shimmer 2s linear infinite;
         }
 
-        .pixel-progress-container::before, .pixel-progress-container::after {
-            content: 'g';
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--blue-gmod);
-            color: white;
-            padding: 5px 10px;
-            font-size: 0.8rem;
+        @keyframes shimmer {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
         }
-        .pixel-progress-container::before { left: -40px; }
-        .pixel-progress-container::after { right: -40px; }
 
-        .status-text {
-            font-size: 0.8rem;
+        .progress-text {
+            font-size: 1.1em;
+            color: #ffffff;
             margin-top: 15px;
-            color: #ccc;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-weight: 400;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
-        .welcome-text {
-            margin-top: 20px;
-            font-size: 1.5rem;
+        .credits {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
-            color: var(--blue-gmod);
+            color: #666;
+            font-size: 0.9em;
+            font-weight: 300;
+        }
+
+        .credits div {
+            margin: 5px 0;
+        }
+
+        .version {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: #555;
+            font-size: 0.8em;
+            font-weight: 300;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
         }
     </style>
 </head>
 <body>
-    <div class="crt-overlay"></div>
+    <div class="background-anim"></div>
+    
+    <div class="version">v1.0.0</div>
 
-    <div class="container">
-        <div class="center-stage">
-            <div class="gear-spin"></div>
-            <div class="g-logo-center">g</div>
+    <div class="content">
+        <h1>Celestia<span>RP</span></h1>
+        <div id="status">Connexion au serveur<span class="loading-dots"></span></div>
 
-            <img src="https://placehold.co/128x128/000000/ffffff?text=Gmod" class="floating-item item-1">
-            <img src="https://placehold.co/128x128/000000/ffffff?text=RP" class="floating-item item-2">
+        <div class="progress-container">
+            <div class="progress-bar" id="loadbar"></div>
         </div>
 
-        <div class="text-area">
-            <h2>CONNEXION À : <span class="blue-highlight" id="server-name">CelestiaRP...</span></h2>
-            
-            <div class="pixel-progress-container">
-                <div class="pixel-progress-bar" id="progress"></div>
-            </div>
-
-            <div class="status-text" id="status">Chargement du script...</div>
-        </div>
-        
-        <h3 class="welcome-text">BIENVENUE SUR CelestiaRP !</h3>
+        <div class="progress-text" id="progressText">0%</div>
     </div>
 
     <script>
-        // Variables globales
-        var totalFiles = 0;
-        var downloadedFiles = 0;
-        
-        // Éléments du DOM
-        var progressBar = document.getElementById('progress');
-        var statusText = document.getElementById('status');
-        var serverNameEl = document.getElementById('server-name');
+        let filesTotal = 0;
+        let filesNeeded = 0;
+        const statusText = document.getElementById('status');
+        const loadBar = document.getElementById('loadbar');
+        const progressText = document.getElementById('progressText');
 
-        // PREUVE DE VIE : On change le texte tout de suite pour montrer que le script marche
-        statusText.innerText = "CONNEXION AU SERVEUR...";
-
-        // 1. Réception du nom du serveur
-        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
-            if (servername) {
-                serverNameEl.innerText = servername;
-            }
-        }
-
-        // 2. Nombre TOTAL de fichiers
-        function SetFilesTotal(total) {
-            totalFiles = total;
-            downloadedFiles = 0;
-        }
-
-        // 3. Changement du nombre de fichiers nécessaires
-        function SetFilesNeeded(needed) {
-            if (totalFiles === 0) totalFiles = needed; 
-        }
-
-        // 4. Téléchargement d'un fichier (Fait avancer la barre)
         function DownloadingFile(fileName) {
-            downloadedFiles++;
-            
-            var percentage = 0;
-            // Sécurité : On évite la division par zéro
-            if (totalFiles > 0) {
-                percentage = (downloadedFiles / totalFiles) * 100;
+            const shortName = fileName.split('/').pop();
+            statusText.innerHTML = "Téléchargement : <span style='color: #3264c8;'>" + shortName + "</span><span class='loading-dots'></span>";
+        }
+
+        function SetStatusChanged(status) {
+            statusText.innerHTML = status + "<span class='loading-dots'></span>";
+        }
+
+        function SetFilesNeeded(needed) {
+            filesNeeded = needed;
+            updateProgress();
+        }
+
+        function SetFilesTotal(total) {
+            filesTotal = total;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            if (filesTotal > 0) {
+                let progress = Math.max(0, Math.min(100, ((filesTotal - filesNeeded) / filesTotal) * 100));
+                loadBar.style.width = progress + "%";
+                progressText.textContent = Math.round(progress) + "%";
             } else {
-                // Si on télécharge mais que le total est inconnu, on met 50% par défaut
-                percentage = 50; 
+                loadBar.style.width = "0%";
+                progressText.textContent = "0%";
             }
-
-            progressBar.style.width = percentage + "%";
-
-            // Nom du fichier raccourci
-            var shortName = fileName;
-            if (fileName.length > 50) {
-                shortName = "..." + fileName.substring(fileName.length - 50);
-            }
-            statusText.innerText = "TÉLÉCHARGEMENT : " + shortName;
         }
 
-        // 5. Gestion des statuts (CORRECTION MAJEURE ICI)
-        function SetStatus(status) {
-            // On force le statut en chaîne de texte pour éviter les bugs
-            var statusStr = String(status);
+        if (!window.navigator.userAgent.includes("Valve Source Client")) {
+            let p = 0;
+            const messages = [
+                "Connexion au serveur",
+                "Chargement des ressources",
+                "Téléchargement des fichiers",
+                "Initialisation du client",
+                "Presque prêt"
+            ];
+            let messageIndex = 0;
             
-            // On met tout en minuscule pour faciliter la détection
-            var lowerStatus = statusStr.toLowerCase();
-
-            // DÉTECTION DE LA FIN DU CHARGEMENT
-            // On cherche "client info", "sent", "sending", etc.
-            if (lowerStatus.indexOf("client info") !== -1 || lowerStatus.indexOf("infos client") !== -1) {
-                statusText.innerText = "LANCEMENT DU JEU... (TERMINÉ !)";
-                // FORCE LA BARRE À 100% MÊME S'IL N'Y AVAIT PAS DE FICHIERS
-                progressBar.style.width = "100%";
-            } 
-            // DÉTECTION DU WORKSHOP
-            else if (lowerStatus.indexOf("workshop") !== -1) {
-                statusText.innerText = "TÉLÉCHARGEMENT ADDONS STEAM (WORKSHOP)...";
-            } 
-            // AUTRES CAS
-            else {
-                statusText.innerText = statusStr.toUpperCase();
-            }
+            setInterval(() => {
+                p += Math.random() * 2;
+                if (p > 100) {
+                    p = 0;
+                    messageIndex = (messageIndex + 1) % messages.length;
+                }
+                loadBar.style.width = Math.min(p, 100) + "%";
+                progressText.textContent = Math.round(Math.min(p, 100)) + "%";
+                statusText.innerHTML = messages[messageIndex] + "<span class='loading-dots'></span>";
+            }, 100);
         }
-
-        // --- EXPOSITION DES FONCTIONS ---
-        window.GameDetails = GameDetails;
-        window.SetFilesTotal = SetFilesTotal;
-        window.SetFilesNeeded = SetFilesNeeded;
-        window.DownloadingFile = DownloadingFile;
-        window.SetStatus = SetStatus;
     </script>
 </body>
 </html>
