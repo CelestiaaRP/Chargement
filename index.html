@@ -6,8 +6,7 @@
     <title>Chargement - CelestiaRP</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        /* --- CSS STYLE RÉTRO (IDENTIQUE AU PREMIER CODE) --- */
-
+        /* --- CSS STYLE RÉTRO --- */
         :root {
             --blue-gmod: #00aaff;
             --bg-dark: #0a0a10;
@@ -20,9 +19,9 @@
             height: 100%;
             overflow: hidden;
             background-color: var(--bg-dark);
-            font-family: 'Press Start 2P', cursive; /* Police Pixel */
+            font-family: 'Press Start 2P', cursive;
             color: white;
-            image-rendering: pixelated; /* Force le rendu pixelisé pour les images */
+            image-rendering: pixelated;
             user-select: none;
         }
 
@@ -43,7 +42,6 @@
             opacity: 0.5;
         }
 
-        /* Petit scintillement d'écran */
         @keyframes flicker {
             0% { opacity: 0.5; }
             50% { opacity: 0.45; }
@@ -54,14 +52,14 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* Pousse le contenu vers le bas comme sur le GIF */
+            justify-content: flex-end;
             align-items: center;
-            height: 90%; /* Laisse un peu d'espace en bas */
+            height: 90%;
             padding-bottom: 50px;
             z-index: 1;
         }
 
-        /* --- Zone Centrale (Logo et objets tournants) --- */
+        /* --- Zone Centrale --- */
         .center-stage {
             position: relative;
             width: 400px;
@@ -72,7 +70,6 @@
             margin-bottom: 50px;
         }
 
-        /* L'engrenage qui tourne */
         .gear-spin {
             position: absolute;
             width: 200px;
@@ -80,9 +77,9 @@
             background-size: contain;
             opacity: 0.3;
             animation: rotate 10s linear infinite;
+            mix-blend-mode: screen; 
         }
 
-        /* Le logo 'g' au centre */
         .g-logo-center {
             position: relative;
             font-size: 12rem;
@@ -91,14 +88,16 @@
             z-index: 2;
         }
 
-        /* Les objets "fil de fer" qui flottent (Gravgun, caisse...) */
         .floating-item {
             position: absolute;
-            opacity: 0.6;
+            width: 64px; 
+            height: auto;
+            opacity: 0.7;
+            mix-blend-mode: screen;
             filter: drop-shadow(0 0 5px var(--blue-gmod));
             animation: float 4s ease-in-out infinite;
         }
-        /* Positionnement arbitraire des objets */
+        
         .item-1 { top: 0; left: 20%; animation-delay: 0s; }
         .item-2 { top: 10%; right: 20%; animation-delay: 1s; }
         .item-3 { bottom: 20%; left: 30%; animation-delay: 2s; }
@@ -123,30 +122,25 @@
 
         .blue-highlight { color: var(--blue-gmod); }
 
-        /* --- La fameuse Barre de Progression à Icônes --- */
         .pixel-progress-container {
             width: 100%;
             height: 50px;
-            border: 4px solid white; /* Bordure pixelisée */
+            border: 4px solid white;
             background: #000;
             padding: 4px;
             box-shadow: 0 0 15px var(--blue-gmod);
             position: relative;
         }
 
-        /* LE STYLE ORIGINAL AVEC LE "G" DANS LA BARRE */
         .pixel-progress-bar {
             height: 100%;
             width: 0%;
-            /* Image originale : carré bleu avec un G */
             background-image: url('https://placehold.co/32x32/00aaff/ffffff?text=G'); 
-            background-repeat: repeat-x; /* Répète l'icône horizontalement */
+            background-repeat: repeat-x;
             background-size: contain;
-            
-            transition: width 0.1s steps(5); /* 'steps' donne l'effet saccadé rétro */
+            transition: width 0.1s steps(5);
         }
 
-        /* Petits logos 'g' aux extrémités de la barre */
         .pixel-progress-container::before, .pixel-progress-container::after {
             content: 'g';
             position: absolute;
@@ -177,7 +171,7 @@
             color: var(--blue-gmod);
         }
 
-        /* Effet glitch sur les bords (optionnel) */
+        /* Effet glitch */
         .glitch-edge {
             position: fixed;
             top: 10%; left: -20px;
@@ -192,7 +186,6 @@
             11% { left: -20px; opacity: 0; }
             100% { left: -20px; opacity: 0; }
         }
-
     </style>
 </head>
 <body>
@@ -200,13 +193,12 @@
     <div class="glitch-edge"></div>
 
     <div class="container">
-        
         <div class="center-stage">
             <div class="gear-spin"></div>
             <div class="g-logo-center">g</div>
-            <<img src="https://placehold.co/80x80/transparent/ffffff?text=Gmod" class="floating-item item-1">
-            <img src="https://placehold.co/60x60/transparent/ffffff?text=RP" class="floating-item item-2">
 
+            <img src="https://placehold.co/128x128/000000/ffffff?text=Gmod" class="floating-item item-1">
+            <img src="https://placehold.co/128x128/000000/ffffff?text=RP" class="floating-item item-2">
         </div>
 
         <div class="text-area">
@@ -216,46 +208,75 @@
                 <div class="pixel-progress-bar" id="progress"></div>
             </div>
 
-            <div class="status-text" id="status">Initialisation...</div>
+            <div class="status-text" id="status">En attente du serveur...</div>
         </div>
         
         <h3 class="welcome-text">BIENVENUE SUR CelestiaRP !</h3>
     </div>
 
     <script>
-        /* --- LOGIQUE JAVASCRIPT --- */
-        let totalFiles = 50;
+        // Variables pour suivre la progression réelle
+        let totalFiles = 0;
         let downloadedFiles = 0;
+        let neededFiles = 0;
+
         const progressBar = document.getElementById('progress');
         const statusText = document.getElementById('status');
         const serverNameEl = document.getElementById('server-name');
 
-        // --- Fonctions GMod ---
+        /* 1. Cette fonction est appelée par GMod au tout début 
+           Elle donne le nom du serveur, la map, etc.
+        */
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+            // GMod envoie parfois le nom un peu tard, on force la mise à jour
             if (servername) {
                 serverNameEl.innerText = servername;
-            } else {
-                serverNameEl.innerText = "CelestiaRP";
             }
         }
 
+        /* 2. Cette fonction est appelée par GMod pour dire combien de fichiers il y a au total.
+           C'est CRUCIAL pour que la barre soit juste.
+        */
+        function SetFilesTotal(total) {
+            totalFiles = total;
+        }
+
+        /*
+           3. GMod peut aussi dire combien de fichiers sont "nécessaires".
+           On l'utilise pour réinitialiser le compteur si besoin.
+        */
+        function SetFilesNeeded(needed) {
+            neededFiles = needed;
+        }
+
+        /* 4. Cette fonction est appelée chaque fois qu'un fichier est téléchargé.
+           C'est ici qu'on fait avancer la barre.
+        */
         function DownloadingFile(fileName) {
             downloadedFiles++;
-            // On coupe le nom du fichier s'il est trop long pour le style rétro
-            let shortName = fileName.length > 40 ? "..." + fileName.substring(fileName.length - 40) : fileName;
             
-            // Texte en Français
+            // Calcul du pourcentage réel
+            let percentage = 0;
+            if (totalFiles > 0) {
+                percentage = (downloadedFiles / totalFiles) * 100;
+            }
+
+            // On coupe le nom du fichier s'il est trop long
+            let shortName = fileName;
+            if (fileName.length > 50) {
+                shortName = "..." + fileName.substring(fileName.length - 50);
+            }
+            
             statusText.innerText = "TÉLÉCHARGEMENT : " + shortName;
-            
-            let percentage = (downloadedFiles / totalFiles) * 100;
-            if (percentage > 100) { totalFiles += 20; percentage = (downloadedFiles / totalFiles) * 100;}
             progressBar.style.width = percentage + "%";
         }
 
+        /* 5. Cette fonction met à jour le texte de statut (ex: "Sending Client Info...")
+        */
         function SetStatus(status) {
-            // Traduction des statuts courants
-            if (status.includes("Sending client info")) {
-                statusText.innerText = "ENVOI DES INFOS CLIENT...";
+            // Si GMod dit "Sending client info", c'est que c'est fini !
+            if (status.includes("Sending client info") || status.includes("Envoi des infos client")) {
+                statusText.innerText = "ENVOI DES INFOS CLIENT... (C'est presque fini !)";
                 progressBar.style.width = "100%";
             } else if (status.includes("Getting Addon Info")) {
                 statusText.innerText = "RÉCUPÉRATION DES ADDONS...";
@@ -264,32 +285,13 @@
             }
         }
 
-        // ==========================================
-        //  ZONE DE SIMULATION (POUR NAVIGATEUR WEB)
-        // ==========================================
-        window.onload = function() {
-            if (!window.gmod) {
-                setTimeout(() => {
-                    GameDetails("CelestiaRP", "", "rp_downtown", 64, "123", "DarkRP");
-                }, 500);
+        // On attache ces fonctions à la fenêtre "window" pour être sûr que GMod les trouve
+        window.GameDetails = GameDetails;
+        window.SetFilesTotal = SetFilesTotal;
+        window.SetFilesNeeded = SetFilesNeeded;
+        window.DownloadingFile = DownloadingFile;
+        window.SetStatus = SetStatus;
 
-                let simCount = 0;
-                let simTotal = 120; 
-                let simulator = setInterval(() => {
-                    simCount++;
-                    const types = ["models/props_c17/furniture", "sound/weapons/laser", "materials/models/pixel/skin"];
-                    const randType = types[Math.floor(Math.random() * types.length)];
-                    DownloadingFile(`${randType}_${simCount}.mdl`);
-
-                    if (simCount >= simTotal) {
-                        clearInterval(simulator);
-                        SetStatus("Sending client info...");
-                        progressBar.style.width = "100%";
-                    }
-                }, 80);
-            }
-        };
-        // ==========================================
     </script>
 </body>
 </html>
